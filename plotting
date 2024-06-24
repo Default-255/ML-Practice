@@ -1,11 +1,14 @@
-#LINEAR REGRESSION
+#LINEAR REGRESSION 1
 
 import numpy as np
 import matplotlip.pyplot as plt
 
-#vector training sets
+#Vector training sets
 x_Train= np.array([ 2 , 3 , 5 , 7 , 8 , 12])
 y_Train= np.array([ 12 , 14 , 45 , 34 , 63 , 69])
 
+#Data preview and plotting
 print(f" Input Data = {x_Train}")
+print(f" Input shape = {x_Train.shape}")
 print(f" Output Data = {y_Train}")
+print(f" Input shape = {y_Train.shape}")
