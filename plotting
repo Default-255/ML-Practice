@@ -12,3 +12,6 @@ print(f" Input Data = {x_Train}")
 print(f" Input shape = {x_Train.shape}")
 print(f" Output Data = {y_Train}")
 print(f" Input shape = {y_Train.shape}")
+
+X_Sum = np.sum(x_Train)
+Y_Sum = np.sum(y_Train)
