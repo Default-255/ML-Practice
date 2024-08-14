@@ -1,0 +1,84 @@
+
+#incomplete as the cost function does not converge propperly
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+
+#Reading data from file
+data = pd.read_csv('Data_Set.csv')                              
+
+X_Original=data[['Storage ', 'RAM ','Screen Size (inches)','Battery Capacity (mAh)']].values.astype(float)  # 2D array consiting features
+# Output values
+y=data['Price ($)'].values.astype(float);                                            
+#Initial Weights
+w=np.array([5,100,50,0.1])                                   
+w = w.reshape(-1)
+
+# Assuming y is your target variable
+plt.figure(figsize=(10, 6))
+plt.scatter(range(len(y)), y, color='blue', alpha=0.5)
+
+# Adding title and labels
+plt.title('Scatter Plot of Target Variable (Price in $)')
+plt.xlabel('Index')
+plt.ylabel('Price ($)')
+plt.grid(True)
+
+# Show the plot
+plt.show()
+
+#manual normalization
+X=np.copy(X_Original)
+
+X[:, 0] = X_Original[:, 0] / np.min(X_Original[:, 0])
+X[:, 1] = X_Original[:, 1] / np.min(X_Original[:, 1])
+X[:, 2] = X_Original[:, 2] / np.min(X_Original[:, 2])
+X[:, 3] = X_Original[:, 3] / np.min(X_Original[:, 3])           # Normalization of the values
+
+"""
+#sklearn normalization
+scaler_X = StandardScaler()
+X = scaler_X.fit_transform(X_Original)
+"""
+
+#cost convergence parameters
+max_iterations= 20000                                             # Max itterations
+alpha = 0.01
+convergence_threshold = 0.1
+lambda_reg = 0.001
+N = len(y)                                                      # Number of data points
+cost_total = 1
+j = 0                                           
+
+# Store the iterations data
+iterations = []
+
+"""
+#outer loop until convergence
+while cost_total >= convergence_threshold and j <= max_iterations:
+        
+        if j == 30000 :
+            alpha = 0.1
+
+        cost_total = 0; 
+        grad_total = np.zeros(4);
+
+        y0 = np.dot(X, w) 
+
+    
+        cost_total = np.sum((y0 - y) ** 2) / N  + (lambda_reg / (2 * N)) * np.sum(w ** 2)                    # Compute the cost 
+
+        grad_total = np.dot(X.T, (y0 - y)) * 2 / N + (lambda_reg / N) * w
+    
+        w -= alpha * grad_total 
+    
+        iterations.append((j, cost_total, grad_total.copy(), w.copy()))
+
+        print(f"Iteration {j}: Cost = {cost_total}, Gradients = {grad_total}, Weights = {w} Cost : {cost_total}")
+        j += 1
+
+print("Final weights:", w)
+print("Final cost:", cost_total)
+"""
