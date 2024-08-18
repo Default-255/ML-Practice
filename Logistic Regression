@@ -1,0 +1,102 @@
+#Telecommuncation customer churn prediction
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+#Load data
+data = pd.read_csv('telecom_churn.csv')
+X_Original = data[['AccountWeeks','DataUsage','CustServCalls', 'DayMins', 'DayCalls', 'MonthlyCharge','RoamMins']].values.astype(float) 
+y = data['Churn'].values.astype(float)  
+
+#Function to standardize the features
+def standardize(X):
+    means = np.mean(X, axis=0)
+    stds = np.std(X, axis=0)
+
+    # Check if stds is a scalar and convert it to an array if needed
+    if np.isscalar(stds):
+        stds = np.array([stds])
+
+    # Replace zeros with ones to avoid division by zero
+    stds[stds == 0] = 1
+
+    return (X - means) / stds
+
+#print(np.shape(X_Original))
+# Standardize features (optional but recommended for gradient descent)
+X = standardize(X_Original)
+
+# Initialize weights
+w = np.array([100.0,20,30.0,40.0,30.0,10,20])
+
+# Hyperparameters
+alpha = 0.05  # Learning rate
+iterations = 20000  # Number of iterations
+
+# Sigmoid function
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+# Gradient descent function
+def gradient_descent(X,y,w,alpha,itterations):
+  cost=0
+  m = len(y)  # Number of samples
+  for i in range(iterations):
+        # Forward pass: compute predictions
+        z = np.dot(X, w)
+        predictions = sigmoid(z)
+        predictions = np.clip(predictions, 1e-15, 1 - 1e-15)
+
+        # Compute the gradient
+        gradient = np.dot(X.T, (predictions - y)) / m
+        
+        # Update the weights
+        w -= alpha * gradient
+        
+        # Optionally compute and print the cost for monitoring
+        cost = -(1/m) * np.sum(y * np.log(predictions) + (1 - y) * np.log(1 - predictions))
+        #print(f"Iteration {i}: Cost {cost} Weights : {w}")
+  print(f"Final Cost {cost}")
+  return w
+
+
+# Train the model
+w = gradient_descent(X, y, w, alpha, iterations)
+
+# Final weights
+print(f"Final weights: {w} ")
+
+#Predictions on dataset
+predictions = sigmoid(np.dot(X, w))
+predicted_labels = (predictions >= 0.795).astype(int)
+
+# Calculate accuracy
+accuracy = np.mean(predicted_labels == y) * 100
+print(f"Model Accuracy: {accuracy:.2f}%")
+
+#To make predictions on new data
+"""
+X_1=float(input("Enter subscriber Account weeks : "))
+X_2=float(input("Enter subscriber Data Usage : "))
+X_3=float(input("Enter subscriber Customer Service calls : "))
+X_4=float(input("Enter subscriber Daily Minutes : "))
+X_5=float(input("Enter subscriber Daily Calls : "))
+X_6=float(input("Enter subscriber Monthly Bill : "))
+X_7=float(input("Enter subscriber Roam Minutes : "))
+
+X_input=[X_1,X_2,X_3,X_4,X_5,X_6,X_7]
+
+#print(Xnew2)
+
+X_input=standardize(X_input)
+
+
+# Making predictions on the training set (you would use new data in practice)
+prediction = sigmoid(np.dot(X_input, w))
+print(f"Prediction {prediction}")
+if prediction < 0.795:
+    print(f" Customer with the data: \n Account weeks : {X_1} \t  Data Usage: {X_2} \t Customer Service Calls : {X_3} \t Daily Minutes {X_4} \t Daily Calls : {X_5} \t Monthly Bill : {X_5} \t Roam Minutes{X_7} \n Will churn")
+else:
+    print(f" Customer with the data: \n Account weeks : {X_1} \t  Data Usage: {X_2} \t Customer Service Calls : {X_3} \t Daily Minutes {X_4} \t Daily Calls : {X_5} \t Monthly Bill : {X_5} \t Roam Minutes{X_7} \n Will not churn")
+"""
