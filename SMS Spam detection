@@ -1,0 +1,50 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# Load the dataset
+data = pd.read_csv('D:\ML\Email Spam\spam.csv',encoding='latin-1')  # Adjust the path accordingly
+
+# Preprocess the data
+
+# Convert labels to binary values (1 for spam, 0 for ham)
+data['v1'] = data['v1'].map({'spam': 1, 'ham': 0})
+
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(data['v2'], data['v1'], test_size=0.2, random_state=42)
+
+# Text Vectorization using TF-IDF
+tfidf_vectorizer = TfidfVectorizer(stop_words='english', max_df=0.7)
+
+# Fit and transform the training data, transform the test data
+X_train_tfidf = tfidf_vectorizer.fit_transform(X_train)
+X_test_tfidf = tfidf_vectorizer.transform(X_test)
+
+# Model Training with Logistic Regression
+model = LogisticRegression()
+model.fit(X_train_tfidf, y_train)
+
+# Predictions
+y_pred = model.predict(X_test_tfidf)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+print(f'Accuracy: {accuracy * 100:.2f}%')
+
+# Detailed classification report
+print("Classification Report:\n", classification_report(y_test, y_pred))
+
+# Confusion Matrix
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+# Example of predicting a new message
+example_message = ["Congratulations! You've won a free lottery. Claim your prize now."]
+example_message_tfidf = tfidf_vectorizer.transform(example_message)
+prediction = model.predict(example_message_tfidf)
+
+if prediction[0] == 1:
+    print("The message is classified as: Spam")
+else:
+    print("The message is classified as: Not Spam")
